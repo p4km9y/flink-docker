@@ -99,13 +99,46 @@ services:
   mosquitto:
     image: p4km9y/mosquitto
     hostname: mosquitto
+    ports:
+      - "1883:1883"
 
   bridge:
     image: p4km9y/karaf
     hostname: bridge
-    depends_on: 
+    depends_on:
       - kafka-member-1
       - kafka-member-2
       - kafka-member-3
       - mosquitto
-    
+
+  hadoop:
+    image: p4km9y/hadoop
+    hostname: hadoop
+    container_name: hadoop
+
+  elastic:
+    image: elasticsearch
+    command: elasticsearch -Des.node.name="iot" 
+
+  kibana:
+    image: kibana
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_URL=http://elastic:9200
+    depends_on:
+      - elastic
+
+  flink:
+    image: p4km9y/flink
+    depends_on:
+      - hadoop
+      - elastic
+    volumes_from:
+      - hadoop:ro
+
+networks:
+  default:
+    external:
+      name: iot.net
