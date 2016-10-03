@@ -115,6 +115,8 @@ services:
     image: p4km9y/hadoop
     hostname: hadoop
     container_name: hadoop
+    depends_on:
+      - elastic
 
   elastic:
     image: elasticsearch
@@ -134,7 +136,6 @@ services:
     image: p4km9y/flink
     depends_on:
       - hadoop
-      - elastic
     volumes_from:
       - hadoop:ro
 

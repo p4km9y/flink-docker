@@ -17,6 +17,10 @@ docker-compose -p iot up
 ```
 
 ## elastic
+```bash
+# docker-compose -p iot exec elastic /bin/bash
+```
+
 ### 1. Vytorenie indexu
 ```bash
 curl -XPUT 'http://localhost:9200/iot-kura/' -d '{
