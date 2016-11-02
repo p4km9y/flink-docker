@@ -110,6 +110,7 @@ services:
       - kafka-member-2
       - kafka-member-3
       - mosquitto
+      - meshliumdb
 
   hadoop:
     image: p4km9y/hadoop
@@ -118,9 +119,12 @@ services:
     depends_on:
       - elastic
 
+  # --sysctl vm.max_map_count=262144 or sysctl -w vm.max_map_count=262144 on the host
   elastic:
     image: elasticsearch
-    command: elasticsearch -Des.node.name="iot" 
+    command: elasticsearch -Enode.name="iot"
+    ports:
+      - "9200:9200"
 
   kibana:
     image: kibana
@@ -138,6 +142,13 @@ services:
       - hadoop
     volumes_from:
       - hadoop:ro
+
+  meshliumdb:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=pwd
+    ports:
+      - "3306:3306"
 
 networks:
   default:
