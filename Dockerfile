@@ -9,7 +9,7 @@ RUN current="http://www.apache.org/dist/flink/flink-1.1.3" && \
     wget -O - ${current}/${ref} | gzip -dc | tar x -C /opt/ -f - && \
     dir=`ls /opt | grep flink` && \
     ln -s /opt/${dir} /opt/flink && \
-    echo -e "state.backend: filesystem\nstate.backend.fs.checkpointdir: hdfs://hadoop:9000/flink/checkpoints" >> /opt/flink/conf/flink-conf.yaml
+    /bin/echo -e "\nstate.backend: filesystem\nstate.backend.fs.checkpointdir: hdfs://hadoop:9000/flink/checkpoints" >> /opt/flink/conf/flink-conf.yaml
 
 RUN adduser --no-create-home --home /opt/flink --system --disabled-password --disabled-login flink && \
     chown -R flink:root /opt/flink/
