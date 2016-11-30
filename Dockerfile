@@ -18,4 +18,4 @@ USER flink
 
 EXPOSE 8081
 
-CMD /opt/flink/bin/yarn-session.sh -n 2 -tm 1024 -s 4
+CMD /opt/flink/bin/yarn-session.sh
