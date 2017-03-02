@@ -1,6 +1,50 @@
-version: '2'
+version: "3"
+
+volumes:
+  hadoop-config:
 
 services:
+  elastic:
+    image: elasticsearch
+    command: elasticsearch -Enode.name="iot"
+    ports:
+      - "9201:9200"
+#    sysctls:
+#      - vm.max_map_count=262144
+#sysctl -w vm.max_map_count=262144
+
+  hadoop-master:
+    image: p4km9y/hadoop-master
+    hostname: hadoop-master
+    container_name: hadoop-master
+    depends_on:
+      - elastic
+    volumes:
+      - hadoop-config:/var/lib/hadoop/config
+  hadoop-slave-1:
+    image: p4km9y/hadoop-slave
+    container_name: hadoop-slave-1
+    depends_on:
+      - hadoop-master
+  hadoop-slave-2:
+    image: p4km9y/hadoop-slave
+    container_name: hadoop-slave-2
+    depends_on:
+      - hadoop-master
+
+  flink:
+    image: p4km9y/flink:1.3
+    depends_on:
+      - hadoop-master
+    volumes:
+      - hadoop-config:/opt/hadoop-config:ro
+    environment:
+      - "affinity:container==hadoop-master"
+#    entrypoint:
+#      - /usr/bin/tail
+#      - -f
+#      - /var/log/lastlog
+
   zookeeper-leader:
     container_name: zkprl
     hostname: zkprl
@@ -112,20 +156,6 @@ services:
       - mosquitto
       - meshliumdb
 
-  hadoop:
-    image: p4km9y/hadoop
-    hostname: hadoop
-    container_name: hadoop
-    depends_on:
-      - elastic
-
-  # --sysctl vm.max_map_count=262144 or sysctl -w vm.max_map_count=262144 on the host
-  elastic:
-    image: elasticsearch
-    command: elasticsearch -Enode.name="iot"
-    ports:
-      - "9200:9200"
-
   kibana:
     image: kibana
     container_name: kibana
@@ -136,19 +166,12 @@ services:
     depends_on:
       - elastic
 
-  flink:
-    image: p4km9y/flink
-    depends_on:
-      - hadoop
-    volumes_from:
-      - hadoop:ro
-
   meshliumdb:
     image: mysql
     environment:
       - MYSQL_ROOT_PASSWORD=pwd
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
 networks:
   default:
