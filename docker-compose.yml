@@ -8,10 +8,10 @@ services:
     image: elasticsearch
     command: elasticsearch -Enode.name="iot"
     ports:
-      - "9201:9200"
-#    sysctls:
-#      - vm.max_map_count=262144
-#sysctl -w vm.max_map_count=262144
+      - "9200:9200"
+    # sysctl -w vm.max_map_count=262144
+    # sysctls:
+    #   - vm.max_map_count=262144
 
   hadoop-master:
     image: p4km9y/hadoop-master
