@@ -5,13 +5,11 @@ volumes:
 
 services:
   elastic:
+    # sysctl -w vm.max_map_count=262144
     image: elasticsearch
     command: elasticsearch -Enode.name="iot"
     ports:
       - "9200:9200"
-    # sysctl -w vm.max_map_count=262144
-    # sysctls:
-    #   - vm.max_map_count=262144
 
   hadoop-master:
     image: p4km9y/hadoop-master
@@ -40,10 +38,6 @@ services:
       - hadoop-config:/opt/hadoop-config:ro
     environment:
       - "affinity:container==hadoop-master"
-#    entrypoint:
-#      - /usr/bin/tail
-#      - -f
-#      - /var/log/lastlog
 
   zookeeper-leader:
     container_name: zkprl
@@ -55,7 +49,7 @@ services:
       - zookeeper-leader
     environment:
       - ZK_LEADER=zkprl
-      - ZK_SLEEP=4
+      - ZK_SLEEP=6
     entrypoint:
       - /wait-for-it.sh
       - -t
@@ -72,7 +66,7 @@ services:
       - zookeeper-leader
     environment:
       - ZK_LEADER=zkprl
-      - ZK_SLEEP=8
+      - ZK_SLEEP=12
     entrypoint:
       - /wait-for-it.sh
       - -t
